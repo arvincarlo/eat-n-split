@@ -3,21 +3,21 @@ import { useState } from "react";
 const initialFriends = [
   {
     id: 118836,
-    name: "Groot",
+    name: "Sir Ted",
     image:
       "https://th.bing.com/th/id/OIP.l6ExHkrN4SE-v2Ap8PSMUQHaHa?rs=1&pid=ImgDetMain",
     balance: -7,
   },
   {
     id: 933372,
-    name: "Gamora",
+    name: "Jasmin",
     image:
       "https://th.bing.com/th/id/OIP.4fZR_ioMxGXVmr1bNYVg0QHaGc?rs=1&pid=ImgDetMain",
     balance: 20,
   },
   {
     id: 499476,
-    name: "Quill",
+    name: "Gabby",
     image:
       "https://th.bing.com/th/id/OIP.V4qb2cLkFd64Fs6GEl8VWgHaHa?rs=1&pid=ImgDetMain",
     balance: 0,
@@ -51,21 +51,29 @@ function App() {
     setShowAddFriend(false);
   }
 
+  function handleSplitBill(value) {
+    setFriends(friends => friends.map(friend => friend.id === selectedFriend.id ? {...friend, balance: friend.balance + value} : friend));
+    setSelectedFriend(null);
+  }
+
   return (
+    <>
+    <h1>Vietnam Expenses Tracker</h1>
     <div className="app">
       <div className="sidebar">
         <FriendsList
           friends={friends}
           onSelectFriend={handleSelectFriend}
           selectedFriend={selectedFriend}
-        />
+          />
         {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
         <Button onClick={() => setShowAddFriend((show) => !show)}>
           {showAddFriend ? "Close" : "Add friend"}
         </Button>
       </div>
-      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
+      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} onSplitBill={handleSplitBill}/>}
     </div>
+    </>
   );
 }
 
@@ -118,7 +126,7 @@ function Friend({ friend, onSelectFriend, selectedFriend }) {
 function FormAddFriend({ onAddFriend }) {
   const [name, setName] = useState("");
   const [image, setImage] = useState(
-    "https://th.bing.com/th/id/R.58f306a725744f6c292b31b6529e7d1e?rik=LvCQA6pPBcCEMw&riu=http%3a%2f%2fimage.slidesharecdn.com%2fposter-randomavatars3-140426144729-phpapp01%2f95%2fposter-random-avatars-3-1-638.jpg%3fcb%3d1398523665&ehk=TeZnxvUZyYdqKDDuNuITJjZj1v3kzegw%2fKibZZqLtGM%3d&risl=&pid=ImgRaw&r=0"
+    "https://th.bing.com/th/id/R.0c46d1341a164a5d3f5a121157b61919?rik=hdElLFsd4pU%2bLA&riu=http%3a%2f%2fimg2.wikia.nocookie.net%2f__cb20140627194825%2fmarvelmovies%2fimages%2f9%2f9a%2fGuardiansofthegalaxy_avatar_rocket.png&ehk=fFhNHnPfa4cFnuJ9kBv%2b5YzNGrLo8LAumyrB95SiBoc%3d&risl=&pid=ImgRaw&r=0"
   );
 
   function handeSubmit(e) {
@@ -163,14 +171,23 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSplitBill({ selectedFriend }) {
+function FormSplitBill({ selectedFriend, onSplitBill }) {
   const [bill, setBill] = useState("");
   const [paidByUser, setPaidByUser] = useState("");
   const paidByFriend = bill ? bill - paidByUser : "";
   const [whoIsPaying, setWhoIsPaying] = useState("user");
 
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!bill || !paidByUser) return;
+
+
+    onSplitBill(whoIsPaying === "user" ? paidByFriend : -paidByUser);
+  }
+
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleSubmit}>
       <h2>Split a bill with {selectedFriend.name}</h2>
 
       <label>💲 Bill Value</label>
