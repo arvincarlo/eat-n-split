@@ -58,7 +58,6 @@ function App() {
 
   return (
     <>
-    <h1>Vietnam Expenses Tracker</h1>
     <div className="app">
       <div className="sidebar">
         <FriendsList
